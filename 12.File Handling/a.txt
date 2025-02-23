@@ -1,0 +1,2 @@
+Welcome to this directory
+Welcome to Python
