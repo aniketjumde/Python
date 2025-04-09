@@ -1,45 +1,54 @@
 import csv
 
-from config.mongodb import get_Mongodb_connection
-from config.mongodb.Configration import get_collection
-from config.mysqldb import get_sqldb_connection
+from config.mongodb.configuration import get_collection
+from config.mysqldb import get_mysqldb_connection
 
 '''
-    this method save student information in csv file
-    Filepath is give in csv configartion file
+    @Author : Sachin Dhane
+    @Date   : 18-11-2024
+    This method Save student information in CSV File
+    Input : filpath - Its path where file is created
+            L       - List of List which has student Information
+    Output: None
 '''
 
+def save_to_csv(filepath, L):
+    fw = open(filepath,"w", newline='')
+    writer = csv.writer(fw)
+    header = ["RNO","NAME","PER"]
+    writer.writerow(header)
 
-def save_to_csv(filepath,list_to_list):
-    fw=open(filepath,"w",newline='')
-    cw=csv.writer(fw)
-    header=['RNO','NAME','PER']
-
-    cw.writerow(header)
-
-    for record in list_to_list:
-        cw.writerow(record)
+    for rec in L:
+        writer.writerow(rec)
     fw.close()
-    print("Data is Save Successfully..!!")
+    print(f"Data is Saved successfully in '{filepath}' ")
 
+# L = [ [101,'AAA', 60],[102,'BBB', 70],[103,'CCC',80] ]
 
+def save_to_sqldb(tablename, L ):
+    con = get_mysqldb_connection()
+    cur = con.cursor()
 
-def save_to_sqldb(tablename,L):
-    con=get_sqldb_connection()
-    c=con.cursor()
-    for record in L:
+    #   rec ---> [102,'BBB', 70]
+    for rec in L :
         try:
-                c.execute(f"INSERT INTO {tablename} VALUES({record[0]},'{record[1]}',{record[2]})")
+            cur.execute(f" insert into {tablename} values({rec[0]},'{rec[1]}',{rec[2]})")
         except:
-                print("Rejected Record ",record)
+            print("Rejected Record :", rec ) # Logs
+
     con.commit()
-    print("All Information is Saved in Table :",tablename)
+    print("All information is Saved in table :", tablename)
 
+def save_to_mongodb(cname, L):
+    collection = get_collection(cname)  # collection --> db.student
 
-def save_to_mongodb(cname,L):
-    collection=get_collection(cname)  #collection---> db.student
-
-    for record in L:
-        d={'rno': record[0],'name': record[1],'per': record[2]}
+    for rec in L:
+        d = {'rno': rec[0], 'name': rec[1], 'per': rec[2]}
         collection.insert_one(d)
-    print("Information saved in collection")
+
+    print("Information is Saved in Collection : " + cname)
+
+
+
+
+

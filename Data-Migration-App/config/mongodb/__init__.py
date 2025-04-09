@@ -1,3 +1,3 @@
-from config.mongodb.Configration import get_Mongodb_connection
+from config.mongodb.configuration import get_mongodb_connection
 
-get_Mongodb_connection()
+get_mongodb_connection()
